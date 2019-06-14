@@ -1,59 +1,76 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import {
-  Text, Image, StyleSheet, Dimensions, ImageBackground, StatusBar,
+  View, TextInput, FlatList, ActivityIndicator, Text,
 } from 'react-native';
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  fileName: {
-    fontWeight: 'bold',
-    marginTop: 5,
-  },
-  instructions: {
-    color: '#DDD',
-    fontSize: 14,
-    marginTop: 20,
-    textAlign: 'center',
-  },
-  logo: {
-    height: Dimensions.get('window').height * 0.11,
-    marginVertical: Dimensions.get('window').height * 0.11,
-    width: Dimensions.get('window').height * 0.11 * (1950 / 662),
-  },
-  welcome: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
+import AnimeItem from '~/components/AnimeItem';
 
-const Main = () => (
-  <ImageBackground
-    source={{
-      uri: 'https://s3-sa-east-1.amazonaws.com/rocketseat-cdn/background.png',
-    }}
-    style={styles.container}
-    resizeMode="cover"
-  >
-    <StatusBar barStyle="light-content" backgroundColor="#7159c1" />
-    <Image
-      source={{
-        uri: 'https://s3-sa-east-1.amazonaws.com/rocketseat-cdn/rocketseat_logo.png',
-      }}
-      style={styles.logo}
-      resizeMode="contain"
-    />
-    <Text style={styles.welcome}>Bem-vindo ao Template Básico!</Text>
-    <Text style={styles.instructions}>Essa é a tela principal da sua aplicação =)</Text>
-    <Text style={styles.instructions}>Você pode editar a tela no arquivo:</Text>
-    <Text style={[styles.instructions, styles.fileName]}>src/pages/Main/index.js</Text>
-  </ImageBackground>
-);
+import api from '~/services/api';
 
-export default Main;
+import { general } from '~/styles';
+
+import styles from './styles';
+
+export default class Main extends Component {
+  state = {
+    searchInput: '',
+    data: [],
+  };
+
+  async componentWillMount() {
+    // const animes = await api.get('/anime');
+    const animes = await api.get("/anime?filter[text]='shield hero'");
+    this.setState({ data: animes.data.data });
+  }
+
+  findData = async () => {
+    const anime = await api.get("/anime?filter[text]='shield hero'");
+    // console.tron.log(anime.data.data);
+    return anime;
+  };
+
+  navigateToAnime = (anime) => {
+    this.props.navigation.navigate('Anime', anime);
+  };
+
+  search = async (searchInput) => {
+    this.setState({ searchInput });
+    // const anime = await api.get('/anime?filter[text]=', searchInput);
+    // this.setState({ data: anime.data.data });
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.form}>
+          <TextInput
+            style={general.searchInput}
+            autoCorrect={false}
+            placeholder=""
+            placeholderTextColor="#666"
+            underlineColorAndroid="transparent"
+            value={this.state.searchInput}
+            onChangeText={this.search}
+          />
+        </View>
+        {this.state.data.length !== 0 ? (
+          <FlatList
+            data={this.state.data}
+            renderItem={({ item }) => (
+              <AnimeItem
+                anime={item.attributes}
+                onPress={() => {
+                  (this.state.data = item.attributes.canonicalTitle),
+                  this.navigateToAnime(item.attributes);
+                }}
+              />
+            )}
+          />
+        ) : (
+          <ActivityIndicator />
+        )}
+      </View>
+    );
+  }
+}
