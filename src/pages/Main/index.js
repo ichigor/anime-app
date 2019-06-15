@@ -19,16 +19,15 @@ export default class Main extends Component {
   };
 
   async componentWillMount() {
-    // const animes = await api.get('/anime');
-    const animes = await api.get("/anime?filter[text]='shield hero'");
+    const animes = await api.get('/anime');
     this.setState({ data: animes.data.data });
   }
 
-  findData = async () => {
-    const anime = await api.get("/anime?filter[text]='shield hero'");
-    // console.tron.log(anime.data.data);
-    return anime;
-  };
+  // findData = async () => {
+  //   const anime = await api.get("/anime?filter[text]='shield hero'");
+  //   // console.tron.log(anime.data.data);
+  //   return anime;
+  // };
 
   navigateToAnime = (anime) => {
     this.props.navigation.navigate('Anime', anime);
@@ -36,8 +35,13 @@ export default class Main extends Component {
 
   search = async (searchInput) => {
     this.setState({ searchInput });
-    // const anime = await api.get('/anime?filter[text]=', searchInput);
-    // this.setState({ data: anime.data.data });
+    if (searchInput === '') {
+      const anime = await api.get('/anime');
+      this.setState({ data: anime.data.data });
+    } else {
+      const anime = await api.get(`/anime?filter[text]=${searchInput}`);
+      this.setState({ data: anime.data.data });
+    }
   };
 
   render() {
