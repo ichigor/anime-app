@@ -15,17 +15,6 @@ const styles = StyleSheet.create({
   loading: {
     marginTop: metrics.basePadding,
   },
-  image: {
-    alignItems: 'stretch',
-    width: 370,
-    height: 550,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  episode: { fontSize: 18 },
-  synopsis: { fontSize: 18 },
 });
 
 export default styles;

@@ -12,7 +12,7 @@ import { general } from '~/styles';
 
 import styles from './styles';
 
-export default class Main extends Component {
+export default class Completed extends Component {
   state = {
     searchInput: '',
     data: [],
@@ -31,8 +31,6 @@ export default class Main extends Component {
     this.setState({ searchInput });
     if (searchInput !== '') {
       const anime = await api.get(`/anime?filter[text]=${searchInput}`);
-      console.tron.log(anime);
-
       this.setState({ data: anime.data.data });
     } else {
       const anime = await api.get('/anime');
